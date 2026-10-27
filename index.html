@@ -3,23 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>카운터</title>
+  <title>화면 부품 지도</title>
   <style>
-    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 80px; }
-    #count { font-size: 64px; margin-bottom: 20px; }
-    button { font-size: 20px; padding: 10px 24px; cursor: pointer; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: sans-serif; background: #f4f6f8; color: #222; padding: 24px 16px; }
+    h1 { font-size: 20px; text-align: center; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    .part { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .part > .target { flex: 1; outline: 2px dashed #e4572e; outline-offset: 3px; border-radius: 6px; min-width: 0; }
+    .tag { flex: none; width: 76px; text-align: center; font-size: 13px; font-weight: bold; color: #fff; background: #e4572e; padding: 4px 0; border-radius: 12px; }
+    header { background: #e4572e; color: #fff; padding: 16px; text-align: center; border-radius: 6px; }
+    header h2 { margin: 0; font-size: 22px; }
+    nav { background: #fff; border: 1px solid #ddd; display: flex; justify-content: center; gap: 8px; padding: 10px; border-radius: 6px; }
+    nav a { color: #333; padding: 6px 14px; border-radius: 16px; background: #ffe3da; font-size: 14px; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.1); padding: 20px; text-align: center; }
+    .card h3 { margin: 0 0 10px; }
+    ul { list-style: none; padding: 0; margin: 0 0 10px; text-align: left; line-height: 1.8; }
+    .count { font-size: 40px; margin: 6px 0; }
+    button { font-size: 16px; padding: 8px 22px; border: 0; border-radius: 8px; background: #e4572e; color: #fff; }
+    footer { background: #333; color: #ddd; text-align: center; padding: 12px; font-size: 14px; border-radius: 6px; }
+    .inner { display: flex; flex-direction: column; gap: 10px; }
+    .inner .part { margin: 0; }
+    .inner .tag { background: #1a7f37; }
+    .inner .target { outline-color: #1a7f37; }
+    .note { font-size: 13px; color: #666; text-align: center; margin-top: 18px; line-height: 1.6; }
   </style>
 </head>
 <body>
-  <div id="count">0</div>
-  <button id="btn">증가</button>
-  <script>
-    let count = 0;
-    const el = document.getElementById('count');
-    document.getElementById('btn').addEventListener('click', () => {
-      count += 2;
-      el.textContent = count;
-    });
-  </script>
+  <div class="wrap">
+    <h1>🔖 index.html 화면 부품 지도</h1>
+
+    <div class="part">
+      <div class="tag">헤더</div>
+      <header class="target"><h2>🍊 내 취향 카드</h2></header>
+    </div>
+
+    <div class="part">
+      <div class="tag">탭</div>
+      <nav class="target"><a>홈</a><a>취향</a><a>연락처</a></nav>
+    </div>
+
+    <div class="part">
+      <div class="tag">카드</div>
+      <section class="card target">
+        <h3>🎓 제주대학교 홍보</h3>
+        <div class="inner">
+          <div class="part">
+            <div class="tag">목록</div>
+            <ul class="target">
+              <li>🌊 바다와 한라산 사이, 꿈이 자라는 곳</li>
+              <li>🍊 제주의 햇살처럼 따뜻한 배움</li>
+              <li>🌋 화산섬의 에너지로 미래를 열어갑니다</li>
+              <li>… (총 100줄)</li>
+            </ul>
+          </div>
+          <div class="count">0</div>
+          <div class="part">
+            <div class="tag">버튼</div>
+            <div class="target"><button>좋아요</button></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="part">
+      <div class="tag">푸터</div>
+      <footer class="target">© 2026 내 취향 카드</footer>
+    </div>
+
+    <p class="note">
+      주황색 이름표는 바깥 부품, 초록색 이름표는 카드 안의 부품입니다.<br>
+      <b>입력창</b>은 index.html에 없습니다. (텍스트 입력 요소가 없음)
+    </p>
+  </div>
 </body>
 </html>
