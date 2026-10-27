@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixabay 이미지 슬라이드</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: sans-serif; background: #f4f6f8; color: #222; padding: 24px 16px; }
+    .wrap { max-width: 960px; margin: 0 auto; }
+    h1 { text-align: center; }
+    form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    input { padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 8px; }
+    #key { flex: 1 1 240px; }
+    #query { flex: 2 1 240px; }
+    button { padding: 10px 18px; font-size: 15px; border: 0; border-radius: 8px; background: #e4572e; color: #fff; cursor: pointer; }
+    button:disabled { background: #bbb; cursor: default; }
+    #status { text-align: center; min-height: 24px; color: #555; }
+    .slider { display: flex; align-items: center; gap: 10px; }
+    .slider button { flex: none; font-size: 22px; padding: 10px 14px; }
+    #grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    #grid img { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; background: #ddd; display: block; }
+    #page { text-align: center; margin-top: 12px; font-size: 14px; color: #555; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🖼️ Pixabay 이미지 슬라이드</h1>
+
+    <form id="form">
+      <input id="key" type="password" placeholder="Pixabay API Key" autocomplete="off" required>
+      <input id="query" type="text" placeholder="검색어 (예: 제주 감귤, orange)" required>
+      <button type="submit">검색</button>
+    </form>
+
+    <div id="status">API Key와 검색어를 입력하세요.</div>
+
+    <div class="slider">
+      <button id="prev" disabled>◀</button>
+      <div id="grid"></div>
+      <button id="next" disabled>▶</button>
+    </div>
+    <div id="page"></div>
+  </div>
+
+  <script>
+    const PER_PAGE = 10;
+    const $ = id => document.getElementById(id);
+    let page = 1, totalPages = 0, currentQuery = '', currentKey = '';
+
+    try { $('key').value = localStorage.getItem('pixabayKey') || ''; } catch (e) {}
+
+    async function load(p) {
+      $('status').textContent = '불러오는 중...';
+      const url = 'https://pixabay.com/api/?' + new URLSearchParams({
+        key: currentKey, q: currentQuery, image_type: 'photo',
+        per_page: PER_PAGE, page: p, lang: 'ko'
+      });
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(res.status === 400 ? 'API Key가 올바르지 않습니다.' : '요청 실패 (' + res.status + ')');
+        const data = await res.json();
+        if (!data.hits.length) {
+          $('grid').innerHTML = '';
+          $('status').textContent = '검색 결과가 없습니다.';
+          $('prev').disabled = $('next').disabled = true;
+          $('page').textContent = '';
+          return;
+        }
+        page = p;
+        totalPages = Math.ceil(Math.min(data.totalHits, 500) / PER_PAGE);
+        $('grid').innerHTML = data.hits.map(h =>
+          `<a href="${h.pageURL}" target="_blank" rel="noopener"><img src="${h.webformatURL}" alt="${h.tags}" title="${h.tags}"></a>`
+        ).join('');
+        $('status').textContent = `"${currentQuery}" 검색 결과 ${data.totalHits}개`;
+        $('page').textContent = `${page} / ${totalPages} 페이지 (한 번에 ${PER_PAGE}개)`;
+        $('prev').disabled = page <= 1;
+        $('next').disabled = page >= totalPages;
+      } catch (err) {
+        $('status').textContent = '오류: ' + err.message;
+      }
+    }
+
+    $('form').addEventListener('submit', e => {
+      e.preventDefault();
+      currentKey = $('key').value.trim();
+      currentQuery = $('query').value.trim();
+      try { localStorage.setItem('pixabayKey', currentKey); } catch (e) {}
+      load(1);
+    });
+    $('prev').addEventListener('click', () => load(page - 1));
+    $('next').addEventListener('click', () => load(page + 1));
+  </script>
+</body>
+</html>
