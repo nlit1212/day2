@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>반응형 메뉴</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: sans-serif; background: #f4f6f8; color: #222; }
+    header { position: sticky; top: 0; z-index: 10; background: #1f3a5f; color: #fff; }
+    .bar { max-width: 1000px; margin: 0 auto; padding: 0 16px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-size: 20px; font-weight: bold; }
+    #menu { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+    #menu a { display: block; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 8px; }
+    #menu a:hover, #menu a.active { background: #3b6aa8; }
+    #burger { display: none; background: none; border: 0; cursor: pointer; padding: 8px; width: 44px; height: 44px; }
+    #burger span { display: block; height: 3px; background: #fff; margin: 5px 0; border-radius: 2px; transition: transform .25s, opacity .25s; }
+    #burger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    #burger.open span:nth-child(2) { opacity: 0; }
+    #burger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+    main { max-width: 1000px; margin: 0 auto; padding: 24px 16px; }
+    .panel { display: none; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+    .panel.show { display: block; }
+    .panel h2 { margin-top: 0; }
+
+    @media (max-width: 720px) {
+      #burger { display: block; }
+      #menu { display: none; position: absolute; top: 56px; left: 0; right: 0; flex-direction: column; background: #1f3a5f; padding: 8px 16px 16px; gap: 0; box-shadow: 0 6px 12px rgba(0,0,0,.2); }
+      #menu.open { display: flex; }
+      #menu a { padding: 14px 8px; border-radius: 0; border-bottom: 1px solid rgba(255,255,255,.15); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <div class="logo">📌 카테고리</div>
+      <button id="burger" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+      <ul id="menu">
+        <li><a href="#food" data-target="food" class="active">🍜 음식</a></li>
+        <li><a href="#furniture" data-target="furniture">🛋️ 가구</a></li>
+        <li><a href="#realestate" data-target="realestate">🏠 부동산</a></li>
+        <li><a href="#stock" data-target="stock">📈 주식</a></li>
+        <li><a href="#map" data-target="map">🗺️ 지도</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section id="food" class="panel show"><h2>🍜 음식</h2><p>맛집과 레시피, 제철 음식을 소개하는 공간입니다.</p></section>
+    <section id="furniture" class="panel"><h2>🛋️ 가구</h2><p>인테리어와 가구 정보를 모아 보는 공간입니다.</p></section>
+    <section id="realestate" class="panel"><h2>🏠 부동산</h2><p>매물과 시세 정보를 확인하는 공간입니다.</p></section>
+    <section id="stock" class="panel"><h2>📈 주식</h2><p>종목과 시장 동향을 살펴보는 공간입니다.</p></section>
+    <section id="map" class="panel"><h2>🗺️ 지도</h2><p>위치와 길 찾기 정보를 보여주는 공간입니다.</p></section>
+  </main>
+
+  <script>
+    const burger = document.getElementById('burger');
+    const menu = document.getElementById('menu');
+
+    function setOpen(open) {
+      menu.classList.toggle('open', open);
+      burger.classList.toggle('open', open);
+      burger.setAttribute('aria-expanded', open);
+      burger.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    }
+
+    burger.addEventListener('click', () => setOpen(!menu.classList.contains('open')));
+
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', e => {
+      e.preventDefault();
+      menu.querySelectorAll('a').forEach(x => x.classList.toggle('active', x === a));
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('show', p.id === a.dataset.target));
+      setOpen(false);
+    }));
+
+    window.addEventListener('resize', () => { if (innerWidth > 720) setOpen(false); });
+  </script>
+</body>
+</html>
